@@ -1,6 +1,5 @@
+// --- PART 1: YOUR TEAMMATE'S D3 MAP CODE (with one small change) ---
 
-
-// Set up dimensions and projection
 const width = 960;
 const height = 600;
 const projection = d3.geoNaturalEarth1()
@@ -8,17 +7,11 @@ const projection = d3.geoNaturalEarth1()
   .translate([width / 2, height / 2]);
 
 const path = d3.geoPath().projection(projection);
-
-// Create SVG
-const svg = d3.select("#map")
-  .append("svg")
+const svg = d3.select("#map").append("svg")
   .attr("width", width)
   .attr("height", height);
-
-// Tooltip
 const tooltip = d3.select("#tooltip");
 
-// Load and display the map
 d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(data => {
   svg.selectAll("path")
     .data(data.features)
@@ -36,32 +29,51 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
       tooltip.style("opacity", 0);
     })
     .on("click", function(event, d) {
-      alert("You selected: " + d.properties.name);
+      // --- THIS IS THE D3 CHANGE ---
+      // Instead of alert(), we get the country's ID and Name
+      // The 'd.id' is the 3-letter code (e.g., "FRA" for France)
+      const countryCode = d.id;
+      const countryName = d.properties.name;
+      
+      console.log(`Country clicked: ${countryName} (${countryCode})`);
+      
+      // And we call our new function to update the chart!
+      updateChart(countryCode, countryName);
     });
 });
 
-// --- PART 2: YOUR NEW PLOTLY CHART CODE ---
+// --- PART 2: OUR NEW PLOTLY CHART FUNCTION ---
 
-console.log("Plotly script started...");
+/**
+ * Fetches data for a specific country and updates the Plotly chart.
+ * @param {string} countryCode - The 3-letter ISO code (e.g., "IND", "USA").
+ * @param {string} countryName - The full name (e.g., "India", "United States").
+ */
+async function updateChart(countryCode, countryName) {
+  
+  // Show a loading message
+  document.getElementById('plotly-chart').innerHTML = `<h2>Loading ${countryName}'s GDP data...</h2>`;
 
-// This is the URL for your Flask "kitchen"
-const api_Url = "http://127.0.0.1:5000/api/gdp";
+  // Build the new dynamic API URL
+  const apiUrl = `http://127.0.0.1:5000/api/gdp/${countryCode}`;
 
-// Use fetch() to get the data from your server
-fetch(api_Url)
-  .then(response => {
-    // Check if the connection was successful
+  try {
+    const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return response.json(); // Convert the response to JSON
-  })
-  .then(data => {
-    // 'data' is now your JSON from Pandas:
-    // [ {date: 2022, gdp: 123}, {date: 2021, gdp: 456} ]
-    console.log("Data received from Flask:", data);
+    const data = await response.json();
 
-    // Prepare the data for Plotly (it needs separate X and Y arrays)
+    console.log(`Data received from Flask for ${countryCode}:`, data);
+
+    // Check if the server returned empty data (e.g., no data for that country)
+    if (data.length === 0) {
+      document.getElementById('plotly-chart').innerHTML = 
+        `<h2>Sorry, no GDP data is available for ${countryName}.</h2>`;
+      return;
+    }
+
+    // Prepare the data for Plotly
     const years = data.map(item => item.date).reverse();
     const gdpValues = data.map(item => item.gdp).reverse();
 
@@ -71,23 +83,31 @@ fetch(api_Url)
       y: gdpValues,
       type: 'scatter',
       mode: 'lines+markers',
-      name: 'India GDP'
+      name: `${countryName} GDP`
     }];
 
-    // Define the chart layout
+    // Define the chart layout (now with a dynamic title)
     const layout = {
-      title: 'GDP (in USD) Over Time',
+      title: `${countryName} - GDP (in USD) Over Time`,
       xaxis: { title: 'Year' },
       yaxis: { title: 'GDP ($)' }
     };
 
-    // Draw the chart in the <div id="plotly-chart">
-    Plotly.newPlot('plotly-chart', plotData, layout);
+    // Draw the chart.
+    // We use Plotly.react() instead of newPlot() because it's
+    // much faster for updating a chart that already exists.
+    Plotly.react('plotly-chart', plotData, layout);
 
-  })
-  .catch(error => {
-    // If the fetch fails (e.g., your server isn't running)
+  } catch (error) {
+    // If the fetch fails
     console.error('Error fetching data:', error);
     document.getElementById('plotly-chart').innerHTML =
       "<h2>Could not load chart. Is the Python server running?</h2>";
-  });
+  }
+}
+
+// --- PART 3: INITIAL PAGE LOAD ---
+
+// When the page first loads, call updateChart() with India's
+// data so the chart isn't empty.
+updateChart("IND", "India");
