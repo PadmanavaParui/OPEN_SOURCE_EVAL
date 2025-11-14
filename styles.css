@@ -108,3 +108,8 @@ footer {
 .info-panel {
     transition: all 0.3s ease-in-out;
 }
+/* This gives the chart's container a width and height */
+#plotly-chart {
+  width: 100%; /* Take up the full width of the sidebar */
+  height: 300px; /* Give it a fixed height */
+}

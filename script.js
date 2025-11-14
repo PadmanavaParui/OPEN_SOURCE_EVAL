@@ -1,4 +1,4 @@
-// --- PART 1: YOUR TEAMMATE'S D3 MAP CODE (with one small change) ---
+
 
 const width = 960;
 const height = 600;
@@ -49,35 +49,42 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
  * @param {string} countryCode - The 3-letter ISO code (e.g., "IND", "USA").
  * @param {string} countryName - The full name (e.g., "India", "United States").
  */
+// --- PART 2: OUR NEW PLOTLY CHART FUNCTION (WITH MORE LOGGING) ---
+
 async function updateChart(countryCode, countryName) {
   
-  // Show a loading message
-  document.getElementById('plotly-chart').innerHTML = `<h2>Loading ${countryName}'s GDP data...</h2>`;
-
-  // Build the new dynamic API URL
+  console.log("Step 1: updateChart started.");
+  const chartDiv = document.getElementById('plotly-chart');
+  
+  if (!chartDiv) {
+    console.error("CRITICAL ERROR: Cannot find <div id='plotly-chart'>");
+    return;
+  }
+  
+  chartDiv.innerHTML = `<h2>Loading ${countryName}'s GDP data...</h2>`;
   const apiUrl = `http://127.0.0.1:5000/api/gdp/${countryCode}`;
 
   try {
+    console.log("Step 2: Starting fetch in try...catch block...");
     const response = await fetch(apiUrl);
+    
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
+    
     const data = await response.json();
+    console.log(`Step 3: Data received from Flask for ${countryCode}:`, data);
 
-    console.log(`Data received from Flask for ${countryCode}:`, data);
-
-    // Check if the server returned empty data (e.g., no data for that country)
     if (data.length === 0) {
-      document.getElementById('plotly-chart').innerHTML = 
-        `<h2>Sorry, no GDP data is available for ${countryName}.</h2>`;
+      console.log("Step 4: Data is empty, showing 'No data' message.");
+      chartDiv.innerHTML = `<h2>Sorry, no GDP data is available for ${countryName}.</h2>`;
       return;
     }
 
-    // Prepare the data for Plotly
+    console.log("Step 5: Preparing data for Plotly...");
     const years = data.map(item => item.date).reverse();
     const gdpValues = data.map(item => item.gdp).reverse();
 
-    // Define the chart data
     const plotData = [{
       x: years,
       y: gdpValues,
@@ -86,28 +93,22 @@ async function updateChart(countryCode, countryName) {
       name: `${countryName} GDP`
     }];
 
-    // Define the chart layout (now with a dynamic title)
     const layout = {
       title: `${countryName} - GDP (in USD) Over Time`,
       xaxis: { title: 'Year' },
       yaxis: { title: 'GDP ($)' }
     };
 
-    // Draw the chart.
-    // We use Plotly.react() instead of newPlot() because it's
-    // much faster for updating a chart that already exists.
-    Plotly.react('plotly-chart', plotData, layout);
+    console.log("Step 6: Calling Plotly.newPlot() to draw the chart...");
+    Plotly.newPlot('plotly-chart', plotData, layout); // <-- FIXED
+    console.log("Step 7: Chart draw call complete.");
 
   } catch (error) {
-    // If the fetch fails
-    console.error('Error fetching data:', error);
-    document.getElementById('plotly-chart').innerHTML =
-      "<h2>Could not load chart. Is the Python server running?</h2>";
+    console.error('Step 8: CATCH BLOCK ERROR:', error);
+    chartDiv.innerHTML = "<h2>Could not load chart. An error occurred. (Check console)</h2>";
   }
 }
 
 // --- PART 3: INITIAL PAGE LOAD ---
-
-// When the page first loads, call updateChart() with India's
-// data so the chart isn't empty.
+console.log("Page loaded. Drawing initial chart for India...");
 updateChart("IND", "India");
