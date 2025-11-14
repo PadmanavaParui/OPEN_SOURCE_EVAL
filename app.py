@@ -6,20 +6,19 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# This is our new "recipe book" (dictionary)
-# It maps simple names to the real World Bank indicator codes
+
+# Mapping  World Bank API codes
 INDICATOR_MAP = {
     "gdp": "NY.GDP.MKTP.CD",          # GDP (Current US$)
-    "inflation": "FP.CPI.TOTL.ZG",    # Inflation, consumer prices (annual %)
-    "unemployment": "SL.UEM.TOTL.ZS"  # Unemployment, total (% of total labor force)
+    "inflation": "FP.CPI.TOTL.ZG",    # Inflation
+    "unemployment": "SL.UEM.TOTL.ZS"  # Unemployment
 }
 
-# We rename 'gdp' to 'value' for generic use
+# 'gdp' to 'value'
 def clean_data_from_world_bank(data_list):
     df = pd.DataFrame(data_list)
     clean_df = df[['date', 'value']]
-    clean_df = clean_df.rename(columns={"value": "value"}) # Keep it generic
-    # Drop rows where 'value' is None (missing data)
+    clean_df = clean_df.rename(columns={"value": "value"})
     clean_df = clean_df.dropna(subset=['value'])
     return clean_df.to_dict('records')
 
@@ -27,7 +26,7 @@ def get_indicator_data(country_code, indicator):
     # Look up the real indicator code from our map
     indicator_code = INDICATOR_MAP.get(indicator)
     
-    # If the indicator isn't in our map, return an error
+    
     if not indicator_code:
         return {"error": "Invalid indicator"}, 400
 
@@ -43,7 +42,7 @@ def get_indicator_data(country_code, indicator):
         if data and len(data) > 1 and data[1]:
             return clean_data_from_world_bank(data[1]), 200
         else:
-            # No data found for that country/indicator combo
+            # No data found for that country/indicator
             return [], 200
 
     except Exception as e:
@@ -54,7 +53,6 @@ def get_indicator_data(country_code, indicator):
 def home():
     return "Economic Dashboard API is running."
 
-# This is our new, all-in-one, dynamic route!
 @app.route("/api/data/<indicator>/<country_code>")
 def api_get_data(indicator, country_code):
     data, status_code = get_indicator_data(country_code.upper(), indicator.lower())

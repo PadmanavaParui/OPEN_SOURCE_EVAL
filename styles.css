@@ -1,15 +1,14 @@
-/* Basic reset for full-screen */
+
 html, body {
   height: 100vh;
   width: 100vw;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevents scrollbars */
+  overflow: hidden; 
   font-family: 'Roboto', sans-serif;
   background-color: #f8f9fa;
 }
 
-/* --- The Map --- */
 #map {
   width: 100%;
   height: 100%;
@@ -18,7 +17,6 @@ html, body {
   left: 0;
 }
 
-/* Map country styles */
 .country {
   fill: #e0e0e0;
   stroke: #fff;
@@ -30,7 +28,6 @@ html, body {
   cursor: pointer;
 }
 
-/* Map tooltip style */
 .tooltip {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.85);
@@ -45,27 +42,25 @@ html, body {
   z-index: 1000;
 }
 
-/* --- New Control Bar (Bottom) --- */
 .controls-container {
   position: absolute;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%); /* Centers the bar */
+  transform: translateX(-50%); 
   
   background: rgba(255, 255, 255, 0.95);
   padding: 15px 25px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   
-  z-index: 50; /* On top of map, below chart */
+  z-index: 50; 
   display: flex;
   align-items: center;
   
-  /* The subtle animation */
+
   transition: all 0.3s ease-in-out;
 }
 
-/* The "lift" on hover */
 .controls-container:hover {
   transform: translateX(-50%) translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -85,37 +80,30 @@ html, body {
   font-family: 'Roboto', sans-serif;
 }
 
-/* --- New Chart Panel (Slides Up) --- */
 #chart-panel {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 350px; /* Height of the panel */
+  height: 350px; 
   
   background: #fff;
   border-top: 1px solid #ddd;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   
-  z-index: 90; /* On top of everything */
-  
-  /* Animation setup: Starts hidden */
+  z-index: 90;
   transform: translateY(100%);
   transition: transform 0.4s ease-out;
 }
 
-/* This class will be added by JavaScript to show the panel */
 #chart-panel.visible {
   transform: translateY(0);
 }
 
-/* The chart itself */
 #plotly-chart {
   width: 100%;
-  height: 100%; /* Fills the panel */
+  height: 100%; 
 }
-
-/* Close Button (X) */
 #close-panel-btn {
   position: absolute;
   top: 10px;
@@ -155,8 +143,7 @@ html, body {
 .controls-container button:hover {
   background-color: #e05252;
 }
-/* This style will be added by JavaScript */
 .country-selected {
-  fill: #f39c12 !important; /* A bright orange to show selection */
+  fill: #f39c12 !important;
   stroke: #a86c0c;
 }
