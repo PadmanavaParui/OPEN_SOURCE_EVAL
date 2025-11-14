@@ -67,59 +67,22 @@ To get a local copy up and running, follow these simple steps.
     cd global-economic-dashboard
     ```
     
-2. **Set up the Backend (Flask)**
+2. **Set up **
     
     Bash
     
     ```
-    # Navigate to the backend folder (assuming 'backend')
-    cd backend
-    
-    # Create a virtual environment
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    
-    # Install Python dependencies
-    pip install -r requirements.txt
-    ```
-    
-3. **Set up the Frontend (React)**
-    
-    Bash
-    
-    ```
-    # Navigate to the frontend folder (assuming 'frontend')
-    cd ../frontend
-    
-    # Install NPM packages
-    npm install
+    install the necessary npm packages with npm install
+    run app.py and predict_app.py to start the server
     ```
     
 4. **Run the application**
-    
-    - **Terminal 1 (Backend):**
         
         Bash
         
         ```
-        cd ../backend
-        source venv/bin/activate
-        flask run
+        go live with the live server on vs code or just run the index.html file
         ```
-        
-    - **Terminal 2 (Frontend):**
-        
-        Bash
-        
-        ```
-        cd ../frontend
-        npm start
-        ```
-        
-    
-    Open `http://localhost:3000` in your browser to see the app.
-    
-
 ---
 
 ## 📊 Data Source
