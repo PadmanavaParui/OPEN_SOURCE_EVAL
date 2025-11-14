@@ -77,7 +77,6 @@ async function updateChart(countryCode, countryName, indicator, indicatorName) {
 }
 
 // --- PART 4: EVENT LISTENERS ---
-
 // 1. D3 Map Click Listener
 d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(data => {
   svg.selectAll("path")
@@ -86,8 +85,19 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
     .append("path")
     .attr("class", "country")
     .attr("d", path)
-    .on("mouseover", function(event, d) { /* ... (tooltip code) ... */ })
-    .on("mouseout", function() { /* ... (tooltip code) ... */ })
+    .on("mouseover", function(event, d) {
+      // --- THIS IS THE TOOLTIP CODE ---
+      tooltip.style("opacity", 1)
+        .html(d.properties.name) // Show the country name
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
+      // --- END TOOLTIP CODE ---
+    })
+    .on("mouseout", function() {
+      // --- THIS HIDES THE TOOLTIP ---
+      tooltip.style("opacity", 0);
+      // --- END HIDE TOOLTIP CODE ---
+    })
     .on("click", function(event, d) {
       // When a country is clicked:
       // 1. Update the "current" country
@@ -111,6 +121,7 @@ indicatorSelect.addEventListener('change', (event) => {
   // 2. Redraw the chart using the CURRENT country but the NEW indicator
   updateChart(currentCountryCode, currentCountryName, currentIndicator, currentIndicatorName);
 });
+
 
 // --- PART 5: INITIAL PAGE LOAD ---
 // When the page first loads, draw the default chart (India, GDP)
