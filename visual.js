@@ -155,18 +155,18 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
 indicatorSelect.addEventListener('change', (event) => {
   currentIndicator = event.target.value;
   currentIndicatorName = event.target.options[event.target.selectedIndex].text;
-  updateChart(); // Redraw chart with new indicator
+  updateChart(); 
 });
 
 chartTypeSelect.addEventListener('change', (event) => {
   currentChartType = event.target.value;
-  updateChart(); // Redraw chart with new type
+  updateChart(); 
 });
 
 clearButton.addEventListener('click', () => {
-  selectedCountries = []; // Empty the array
+  selectedCountries = []; 
   mapSvg.selectAll('.country-selected').classed('country-selected', false); // Clear map styles
-  updateChart(); // This will hide the panel
+  updateChart(); 
 });
 
 closePanelButton.addEventListener('click', () => {
